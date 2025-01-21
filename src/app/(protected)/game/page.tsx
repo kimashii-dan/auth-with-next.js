@@ -6,8 +6,7 @@ import ProgressBar from "@/components/ProgressBar";
 import Text from "@/components/Text";
 import Input from "@/components/Input";
 
-const initialText =
-  "To create a blinking effect in CSS, simply adjust the opacity at different time frames, using keyframes and animation property in CSS.";
+const initialText = "To create a blinking effect in CSS.";
 const wordsArray = initialText.split(" ").map((word) => [...word, " "]); // Split text into words and characters
 
 const calculateWPM = (wordsTyped: number, elapsedTime: number): number => {

@@ -8,16 +8,15 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("API hit: /api/users/stats");
-
     const reqBody = await request.json();
     const { wpm } = reqBody;
-    console.log("Incoming WPM:", wpm);
 
     const token = request.cookies.get("token")?.value;
-
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
     }
 
     const { payload } = await jwtVerify(
@@ -25,8 +24,13 @@ export async function POST(request: NextRequest) {
       new TextEncoder().encode(process.env.TOKEN_SECRET!)
     );
 
-    const userID = payload.id;
-    console.log("User ID from payload:", userID);
+    const userID = payload?.id;
+    if (!userID) {
+      return NextResponse.json(
+        { error: "Invalid token payload: Missing user ID" },
+        { status: 400 }
+      );
+    }
 
     const stats = await Stats.findOne({ player_id: userID });
 
@@ -39,7 +43,7 @@ export async function POST(request: NextRequest) {
       });
 
       await newStats.save();
-      console.log("New stats saved");
+      console.log("New stats saved:", newStats);
     } else {
       stats.races_amount += 1;
 
