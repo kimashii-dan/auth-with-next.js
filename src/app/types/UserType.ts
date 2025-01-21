@@ -3,6 +3,7 @@ interface UserType {
   username: string;
   email: string;
   password: string;
+  avatar: string;
   isVerified: boolean;
   isAdmin: boolean;
   __v: number;

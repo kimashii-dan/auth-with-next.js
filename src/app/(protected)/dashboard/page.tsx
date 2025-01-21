@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import UserType from "@/app/types/UserType";
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserType | null>(null);
 

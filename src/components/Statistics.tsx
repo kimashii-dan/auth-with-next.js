@@ -5,7 +5,12 @@ interface StatsProps {
   isTyping: boolean;
 }
 
-export default function Stats({ words, seconds, wpm, isTyping }: StatsProps) {
+export default function Statistics({
+  words,
+  seconds,
+  wpm,
+  isTyping,
+}: StatsProps) {
   return (
     <div>
       <h1 className="m-0 font-normal text-[2.5rem] text-[#e2b714] font-roboto">

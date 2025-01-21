@@ -17,6 +17,7 @@ export default function SignUpPage() {
   const router = useRouter();
 
   async function handleSumbit(e: React.FormEvent<HTMLFormElement>) {
+    setLoading(true);
     e.preventDefault();
     try {
       const response = await axios.post("api/users/signup", user);
@@ -42,6 +43,9 @@ export default function SignUpPage() {
       setButtonDisabled(true);
     }
   }, [user]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="flex justify-center min-h-screen items-center">

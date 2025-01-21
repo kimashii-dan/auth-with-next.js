@@ -3,13 +3,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
-import Profile from "../../../../public/profile.svg";
 import "../../globals.css";
 import UserType from "@/app/types/UserType";
 
 export default function UserProfile() {
   const [userData, setUserData] = useState<UserType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,8 +35,7 @@ export default function UserProfile() {
     <div className="flex flex-col justify-center gap-7 p-7 rounded-lg bg-[#2c2e31] font-roboto">
       <div className="flex gap-4 items-center">
         <Image
-          priority={true}
-          src={Profile}
+          src={userData?.avatar || "/profile.svg"}
           alt="default"
           width={90}
           height={90}
