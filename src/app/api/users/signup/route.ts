@@ -4,6 +4,7 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SignJWT } from "jose";
+import Stats from "@/models/statsModel";
 connect();
 
 export async function POST(request: NextRequest) {
@@ -37,6 +38,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    const newStats = new Stats({ player_id: user._id });
+    await newStats.save();
 
     const tokenData = {
       id: user._id,

@@ -4,6 +4,7 @@ import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/config/db";
+import Stats from "@/models/statsModel";
 
 connect();
 
@@ -23,12 +24,15 @@ export async function GET(request: NextRequest) {
     const user = await User.findById(payload.id);
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ existence: false });
     }
+
+    const stats = await Stats.findOne({ player_id: payload.id });
 
     return NextResponse.json({
       success: true,
-      data: user,
+      user_data: user,
+      stats_data: stats,
     });
   } catch (error: any) {
     return NextResponse.json(

@@ -5,9 +5,11 @@ import axios from "axios";
 import Image from "next/image";
 import "../../globals.css";
 import UserType from "@/app/types/UserType";
+import StatsType from "@/app/types/StatsType";
 
 export default function UserProfile() {
   const [userData, setUserData] = useState<UserType | null>(null);
+  const [userStats, setUserStats] = useState<StatsType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +19,8 @@ export default function UserProfile() {
       try {
         const response = await axios.get(`/api/users/protected`);
         console.log(response.data);
-        setUserData(response.data.data);
+        setUserData(response.data.user_data);
+        setUserStats(response.data.stats_data);
       } catch (error: any) {
         setError(error);
       } finally {
@@ -43,6 +46,11 @@ export default function UserProfile() {
         <p className="text-4xl">{userData?.username}</p>
       </div>
       <p>Email: {userData?.email}</p>
+
+      <p>
+        {userStats?.highest_WPM} {userStats?.average_WPM}
+        {userStats?.races_amount}
+      </p>
     </div>
   );
 }
