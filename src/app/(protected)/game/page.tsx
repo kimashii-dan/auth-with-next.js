@@ -6,11 +6,12 @@ import ProgressBar from "@/components/ProgressBar";
 import Text from "@/components/Text";
 import Input from "@/components/Input";
 
-const initialText = "To create a blinking effect in CSS.";
-const wordsArray = initialText.split(" ").map((word) => [...word, " "]); // Split text into words and characters
+const initialText =
+  "If a document does not have a value for the indexed field in a unique index, the index will store a null value for this document.";
+const wordsArray = initialText.split(" ").map((word) => [...word, " "]);
 
 const calculateWPM = (wordsTyped: number, elapsedTime: number): number => {
-  if (elapsedTime === 0) return 0; // Avoid division by zero
+  if (elapsedTime === 0) return 0;
   return Math.floor(wordsTyped / (elapsedTime / 60));
 };
 
@@ -20,9 +21,11 @@ export default function Game() {
   const [charIndex, setCharIndex] = useState<number>(0);
   const [wordsTyped, setWordsTyped] = useState<number>(0);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(90);
+  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [selectedTime, setSelectedTime] = useState<number>(60);
   const [wpm, setWPM] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
+  const [cursorIndex, setCursorIndex] = useState<number>(0);
 
   const totalCharacters = wordsArray.flat().length - 1;
 
@@ -38,7 +41,7 @@ export default function Game() {
 
   const finishGame = useCallback(async () => {
     setIsTyping(false);
-    const elapsedTime = 90 - timeLeft;
+    const elapsedTime = selectedTime - timeLeft;
     const finalWPM = calculateWPM(wordsTyped, elapsedTime);
     setWPM(finalWPM);
     setInput("");
@@ -50,7 +53,7 @@ export default function Game() {
     } catch (error) {
       console.error("Failed to submit stats:", error);
     }
-  }, [timeLeft, wordsTyped]);
+  }, [timeLeft, wordsTyped, selectedTime]);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -71,12 +74,14 @@ export default function Game() {
       currentInput === currentWord.slice(0, charIndex - 1).join("")
     ) {
       setCharIndex((prev) => prev - 1);
+      setCursorIndex((prev) => prev - 1);
     } else if (currentInput[charIndex] === currentWord[charIndex]) {
       if (currentInput.length === currentWord.length) {
         moveToNextWord();
       } else {
         setCharIndex((prev) => prev + 1);
       }
+      setCursorIndex((prev) => prev + 1);
 
       if (
         currentInput.length === currentWord.length - 1 &&
@@ -105,26 +110,38 @@ export default function Game() {
     );
   };
 
-  const restartGame = () => {
+  const resetGameState = () => {
     setInput("");
     setWordIndex(0);
     setCharIndex(0);
     setWordsTyped(0);
     setIsTyping(false);
-    setTimeLeft(90);
-    setWPM(0);
     setProgress(0);
+    setCursorIndex(0);
+  };
+
+  const restartGame = () => {
+    resetGameState();
+    setTimeLeft(selectedTime);
+    setWPM(0);
+  };
+
+  const handleTimeSelect = (time: number) => {
+    setSelectedTime(time);
+    setTimeLeft(time);
+    resetGameState();
   };
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">
-      <div className="flex text-[#D1D0C5] flex-col gap-[65px] py-[50px]">
+      <div className="flex text-[#D1D0C5] flex-col gap-[65px] py-6">
         {/* Stats */}
         <Statistics
           isTyping={isTyping}
           words={wordsTyped}
           seconds={timeLeft}
           wpm={wpm}
+          onTimeSelect={handleTimeSelect}
         />
 
         {/* Progress Bar */}
@@ -133,9 +150,10 @@ export default function Game() {
         {/* Text */}
         <Text
           splitted={wordsArray}
-          wordIndex={wordIndex}
-          charIndex={charIndex}
           isTyping={isTyping}
+          seconds={timeLeft}
+          words={wordsTyped}
+          cursorIndex={cursorIndex}
         />
 
         {/* Input */}

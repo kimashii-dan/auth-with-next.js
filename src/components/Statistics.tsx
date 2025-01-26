@@ -3,6 +3,7 @@ interface StatsProps {
   seconds: number;
   wpm: number;
   isTyping: boolean;
+  onTimeSelect: (time: number) => void;
 }
 
 export default function Statistics({
@@ -10,26 +11,37 @@ export default function Statistics({
   seconds,
   wpm,
   isTyping,
+  onTimeSelect,
 }: StatsProps) {
   return (
-    <div>
-      <h1 className="m-0 font-normal text-[2.5rem] text-[#e2b714] font-roboto">
+    <div className="h-12">
+      <div className="m-0 font-normal text-4xl text-[#e2b714] font-roboto ">
         {!isTyping ? (
           words > 0 ? (
             <>
-              <span className="text-[#e2b714]">{wpm}</span> wpm{" "}
+              <span className="">{wpm}</span> wpm{" "}
             </>
           ) : (
-            <span className="text-[#323437]">LOOOL</span>
+            <div className="text-[#646669] bg-[#2c2e31] rounded-md flex gap-5 text-lg py-3 px-4 justify-end">
+              {[15, 30, 60, 120].map((time) => (
+                <button
+                  key={time}
+                  onClick={() => onTimeSelect(time)}
+                  className={`transition-all  ${
+                    seconds === time ? "text-[#e2b714]" : "hover:text-[#D1D0C5]"
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
           )
         ) : (
           <div className="flex items-center gap-2">
-            <span className="whitespace-nowrap min-w-[50px] inline-block text-right">
-              {seconds}
-            </span>
+            <span className="">{seconds}</span>
           </div>
         )}
-      </h1>
+      </div>
     </div>
   );
 }

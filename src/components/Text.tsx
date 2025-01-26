@@ -1,47 +1,72 @@
+import React, { useRef, useEffect, useState } from "react";
+
 interface TextProps {
   splitted: string[][];
-  wordIndex: number;
-  charIndex: number;
+  seconds: number;
+  words: number;
   isTyping: boolean;
+  cursorIndex: number;
 }
 
 export default function Text({
   splitted,
-  wordIndex,
-  charIndex,
+  seconds,
+  words,
   isTyping,
+  cursorIndex,
 }: TextProps) {
+  const textRef = useRef<HTMLDivElement>(null);
+  const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (!textRef.current) return;
+    const textNode = textRef.current;
+    const charElements = textNode.querySelectorAll<HTMLElement>("[data-char]");
+
+    if (cursorIndex < charElements.length) {
+      const charElement = charElements[cursorIndex];
+      const { offsetLeft, offsetTop } = charElement;
+      setCursorPosition({ top: offsetTop, left: offsetLeft });
+    }
+  }, [cursorIndex, splitted]);
+
   return (
-    <div className="text-3xl relative font-roboto break-words">
+    <div
+      ref={textRef}
+      className="text-3xl font-roboto break-words relative leading-10"
+    >
       {splitted.map((word, wordIdx) => (
         <span key={wordIdx} className="inline-block">
           {word.map((char, charIdx) => {
-            const isCursor = wordIdx === wordIndex && charIdx === charIndex;
+            const charIndexGlobal =
+              splitted.slice(0, wordIdx).reduce((sum, w) => sum + w.length, 0) +
+              charIdx;
             return (
               <span
                 key={charIdx}
+                data-char
                 style={{
-                  color:
-                    wordIdx < wordIndex ||
-                    (wordIdx === wordIndex && charIdx < charIndex)
-                      ? "#D1D0C5"
-                      : "#646669",
-                  position: isCursor ? "relative" : undefined,
+                  color: charIndexGlobal < cursorIndex ? "#D1D0C5" : "#646669",
+                  position: "relative",
                 }}
               >
                 {char === " " ? "\u00A0" : char}
-                {isCursor && (
-                  <span
-                    className={`absolute top-1 left-0 w-[3px] rounded-[5px] h-8 bg-[#e2b714] ${
-                      isTyping ? "" : "animate-blink"
-                    }`}
-                  />
-                )}
               </span>
             );
           })}
         </span>
       ))}
+      {(!isTyping && (seconds === 0 || words > 0)) === false && (
+        <div
+          className={`absolute w-[3px] rounded-[5px] h-8 bg-[#e2b714] transition-all ${
+            isTyping ? "" : "animate-cursor"
+          }`}
+          style={{
+            top: `${cursorPosition.top}px`,
+            left: `${cursorPosition.left}px`,
+          }}
+        ></div>
+      )}
     </div>
   );
 }

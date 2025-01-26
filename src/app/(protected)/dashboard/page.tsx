@@ -16,7 +16,7 @@ export default function Dashboard() {
       try {
         const response = await axios.get(`/api/users/protected`);
         console.log(response);
-        setUserData(response.data.data);
+        setUserData(response.data.user_data);
       } catch (error: any) {
         setError(error);
       } finally {

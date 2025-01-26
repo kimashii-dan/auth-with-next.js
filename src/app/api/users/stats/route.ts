@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         (stats.average_WPM * (stats.races_amount - 1) + wpm) /
         stats.races_amount;
 
-      stats.average_WPM = new_average;
+      stats.average_WPM = new_average.toFixed(2);
 
       if (stats.highest_WPM < wpm) {
         stats.highest_WPM = wpm;
