@@ -31,16 +31,13 @@ export default function Dashboard() {
   if (error) return <div>{error}</div>;
   return (
     <div className="flex flex-col justify-center gap-7 p-7 rounded-lg bg-[#2c2e31] font-roboto">
-      <h1 className="text-4xl">Dashboard</h1>
+      <h1 className="text-4xl">Welcome {userData?.username}!</h1>
 
-      <h2 className="text-3xl">Welcome {userData?.username}!</h2>
-
-      <Link href={"/profile"}>
-        <u>Go to profile</u>
-      </Link>
-
-      <Link href={"/game"}>
-        <u>Start game</u>
+      <Link
+        href={"/game"}
+        className="bg-[#e2b714] text-[#2c2e31] w-fit p-3 rounded-md font-medium"
+      >
+        <span>Start game</span>
       </Link>
     </div>
   );

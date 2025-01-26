@@ -7,6 +7,8 @@ import React from "react";
 import Link from "next/link";
 import ArrowLeft from "../../../public/arrow-left.svg";
 import Profile from "../../../public/profile.svg";
+import Github from "../../../public/github.svg";
+import Email from "../../../public/email.svg";
 
 export default function ProtectedLayout({
   children,
@@ -35,6 +37,7 @@ export default function ProtectedLayout({
             alt="logo"
             width={40}
             height={40}
+            className="hover:filter hover:invert hover:brightness-50  transition-all"
           />
         </Link>
       </div>
@@ -46,7 +49,31 @@ export default function ProtectedLayout({
         <Image src={ArrowLeft} alt="arrow left" />
         Go Back
       </button>
-      {children}
+      <div className="flex-grow">{children}</div>
+
+      <div className="flex gap-4 py-5 rounded-lg items-center ">
+        <Link href="https://github.com/kimashii-dan/auth-with-next.js">
+          <Image
+            priority={true}
+            src={Github}
+            alt="github"
+            width={25}
+            height={25}
+            className="hover:filter hover:invert hover:brightness-50 transition-all"
+          />
+        </Link>
+
+        <Link href="mailto:daniyarmunsyzbaev@gmail.com">
+          <Image
+            priority={true}
+            src={Email}
+            alt="email"
+            width={25}
+            height={25}
+            className="hover:filter hover:invert hover:brightness-50 transition-all"
+          />
+        </Link>
+      </div>
     </div>
   );
 }
