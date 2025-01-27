@@ -22,6 +22,7 @@ export default function UserProfile() {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`/api/users/protected`);
+        console.log("LOL");
         console.log(response.data);
         setUserData(response.data.user_data);
         setUserStats(response.data.stats_data);

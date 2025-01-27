@@ -2,16 +2,14 @@ import React, { useRef, useEffect, useState } from "react";
 
 interface TextProps {
   splitted: string[][];
-  seconds: number;
-  words: number;
+  finished: boolean;
   isTyping: boolean;
   cursorIndex: number;
 }
 
 export default function Text({
   splitted,
-  seconds,
-  words,
+  finished,
   isTyping,
   cursorIndex,
 }: TextProps) {
@@ -56,7 +54,7 @@ export default function Text({
           })}
         </span>
       ))}
-      {(!isTyping && (seconds === 0 || words > 0)) === false && (
+      {!finished && (
         <div
           className={`absolute w-[3px] rounded-[5px] h-8 bg-[#e2b714] transition-all ${
             isTyping ? "" : "animate-cursor"

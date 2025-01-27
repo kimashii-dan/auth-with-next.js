@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, ChangeEvent } from "react";
+import { useState, useEffect, useCallback, ChangeEvent, useMemo } from "react";
 import axios from "axios";
 import Statistics from "@/components/Statistics";
 import ProgressBar from "@/components/ProgressBar";
@@ -8,12 +8,6 @@ import Input from "@/components/Input";
 
 const initialText =
   "If a document does not have a value for the indexed field in a unique index, the index will store a null value for this document.";
-const wordsArray = initialText.split(" ").map((word) => [...word, " "]);
-
-const calculateWPM = (wordsTyped: number, elapsedTime: number): number => {
-  if (elapsedTime === 0) return 0;
-  return Math.floor(wordsTyped / (elapsedTime / 60));
-};
 
 export default function Game() {
   const [input, setInput] = useState<string>("");
@@ -26,12 +20,27 @@ export default function Game() {
   const [wpm, setWPM] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const [cursorIndex, setCursorIndex] = useState<number>(0);
+  const [finished, setFinished] = useState<boolean>(false);
+  const [mistakes, setMistakes] = useState<number>(0);
+  const [accuracy, setAccuracy] = useState<number>(100);
 
-  const totalCharacters = wordsArray.flat().length - 1;
+  const wordsArray = useMemo(
+    () => initialText.split(" ").map((word) => [...word, " "]),
+    []
+  );
+
+  const totalCharacters = useMemo(
+    () => wordsArray.flat().length - 1,
+    [wordsArray]
+  );
+
+  const typedCharacterss = useMemo(
+    () => wordsArray.slice(0, wordIndex).flat().length + charIndex + 1,
+    [charIndex, wordIndex, wordsArray]
+  );
 
   useEffect(() => {
     if (!isTyping || timeLeft <= 0) return;
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
@@ -41,19 +50,22 @@ export default function Game() {
 
   const finishGame = useCallback(async () => {
     setIsTyping(false);
+    setFinished(true);
     const elapsedTime = selectedTime - timeLeft;
-    const finalWPM = calculateWPM(wordsTyped, elapsedTime);
+    const finalWPM = Math.floor(wordsTyped / (elapsedTime / 60));
     setWPM(finalWPM);
+    setAccuracy(((totalCharacters - mistakes) / totalCharacters) * 100);
     setInput("");
-    console.log("Game finished, WPM:", finalWPM);
 
     try {
-      const response = await axios.post("/api/users/stats", { wpm: finalWPM });
+      const response = await axios.post("/api/users/stats", {
+        wpm: finalWPM,
+      });
       console.log(response.data);
     } catch (error) {
       console.error("Failed to submit stats:", error);
     }
-  }, [timeLeft, wordsTyped, selectedTime]);
+  }, [selectedTime, timeLeft, wordsTyped, totalCharacters, mistakes]);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -61,53 +73,61 @@ export default function Game() {
     }
   }, [timeLeft, finishGame]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const currentInput = e.target.value;
-    const currentWord = wordsArray[wordIndex];
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const currentInput = e.target.value;
+      const currentWord = wordsArray[wordIndex];
+      setInput(currentInput);
 
-    setInput(currentInput);
+      if (!isTyping) setIsTyping(true);
 
-    if (!isTyping) setIsTyping(true);
-
-    if (
-      currentInput.length < input.length &&
-      currentInput === currentWord.slice(0, charIndex - 1).join("")
-    ) {
-      setCharIndex((prev) => prev - 1);
-      setCursorIndex((prev) => prev - 1);
-    } else if (currentInput[charIndex] === currentWord[charIndex]) {
-      if (currentInput.length === currentWord.length) {
-        moveToNextWord();
+      if (currentInput.length < input.length) {
+        if (currentInput === currentWord.slice(0, charIndex - 1).join("")) {
+          setCharIndex((prev) => prev - 1);
+          setCursorIndex((prev) => prev - 1);
+        }
       } else {
-        setCharIndex((prev) => prev + 1);
-      }
-      setCursorIndex((prev) => prev + 1);
+        if (currentInput[charIndex] === currentWord[charIndex]) {
+          if (currentInput.length === currentWord.length) {
+            moveToNextWord();
+          } else {
+            setCharIndex((prev) => prev + 1);
+          }
+          setCursorIndex((prev) => prev + 1);
 
-      if (
-        currentInput.length === currentWord.length - 1 &&
-        wordIndex + 1 === wordsArray.length
-      ) {
-        moveToNextWord();
-        finishGame();
+          if (
+            currentInput.length === currentWord.length - 1 &&
+            wordIndex + 1 === wordsArray.length
+          ) {
+            moveToNextWord();
+            finishGame();
+          }
+        } else {
+          console.log("Mistake!", mistakes);
+          setMistakes((prev) => prev + 1);
+        }
       }
-    }
 
-    updateProgress();
-  };
+      setProgress(Math.min((typedCharacterss / totalCharacters) * 100, 100));
+    },
+    [
+      charIndex,
+      finishGame,
+      input.length,
+      isTyping,
+      mistakes,
+      totalCharacters,
+      typedCharacterss,
+      wordIndex,
+      wordsArray,
+    ]
+  );
 
   const moveToNextWord = () => {
     setWordIndex((prevIndex) => prevIndex + 1);
     setCharIndex(0);
     setInput("");
     setWordsTyped((prev) => prev + 1);
-  };
-
-  const updateProgress = () => {
-    const correctlyTypedCharacters =
-      wordsArray.slice(0, wordIndex).flat().length + charIndex + 1;
-    setProgress(
-      Math.min((correctlyTypedCharacters / totalCharacters) * 100, 100)
-    );
   };
 
   const resetGameState = () => {
@@ -118,6 +138,9 @@ export default function Game() {
     setIsTyping(false);
     setProgress(0);
     setCursorIndex(0);
+    setFinished(false);
+    setMistakes(0);
+    setAccuracy(100);
   };
 
   const restartGame = () => {
@@ -126,11 +149,11 @@ export default function Game() {
     setWPM(0);
   };
 
-  const handleTimeSelect = (time: number) => {
+  const handleTimeSelect = useCallback((time: number) => {
     setSelectedTime(time);
     setTimeLeft(time);
     resetGameState();
-  };
+  }, []);
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">
@@ -138,10 +161,11 @@ export default function Game() {
         {/* Stats */}
         <Statistics
           isTyping={isTyping}
-          words={wordsTyped}
+          finished={finished}
           seconds={timeLeft}
           wpm={wpm}
           onTimeSelect={handleTimeSelect}
+          accuracy={accuracy}
         />
 
         {/* Progress Bar */}
@@ -151,8 +175,7 @@ export default function Game() {
         <Text
           splitted={wordsArray}
           isTyping={isTyping}
-          seconds={timeLeft}
-          words={wordsTyped}
+          finished={finished}
           cursorIndex={cursorIndex}
         />
 
@@ -160,9 +183,7 @@ export default function Game() {
         <Input
           input={input}
           handleChange={handleChange}
-          isTyping={isTyping}
-          seconds={timeLeft}
-          words={wordsTyped}
+          finished={finished}
           restart={restartGame}
         />
       </div>

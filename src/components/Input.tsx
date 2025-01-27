@@ -4,18 +4,14 @@ import Restart from "../../public/restart.svg";
 interface InputProps {
   input: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  isTyping: boolean;
-  seconds: number;
-  words: number;
+  finished: boolean;
   restart: () => void;
 }
 
 export default function Input({
   input,
   handleChange,
-  isTyping,
-  seconds,
-  words,
+  finished,
   restart,
 }: InputProps) {
   return (
@@ -25,7 +21,7 @@ export default function Input({
         placeholder="Type the above text here when the race begins..."
         value={input}
         onChange={handleChange}
-        disabled={!isTyping && (seconds === 0 || words > 0)}
+        disabled={finished}
         className="w-[45%] text-lg text-[#D1D0C5] p-3 bg-[#2c2e31] rounded-md placeholder:text-[#646669]"
       />
 
