@@ -121,6 +121,7 @@ export default function Game() {
               );
               return {
                 ...newState,
+                input: "",
                 wordIndex: wordsArray.length,
                 finished: true,
                 isTyping: false,
