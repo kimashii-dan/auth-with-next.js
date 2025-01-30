@@ -1,40 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import "../../globals.css";
-import UserType from "@/app/types/UserType";
-import StatsType from "@/app/types/StatsType";
+import { useUserStore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
 import ArrowRight from "../../../../public/arrow-right.svg";
+import axios from "axios";
 
 export default function UserProfile() {
-  const [userData, setUserData] = useState<UserType | null>(null);
-  const [userStats, setUserStats] = useState<StatsType | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const {
+    user: userData,
+    stats: userStats,
+    loading,
+    error,
+    fetchUserData,
+  } = useUserStore();
   const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`/api/users/protected`);
-        console.log("LOL");
-        console.log(response.data);
-        setUserData(response.data.user_data);
-        setUserStats(response.data.stats_data);
-      } catch (error: any) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserData();
-  }, []);
+  }, [fetchUserData]);
 
   async function logout() {
     try {

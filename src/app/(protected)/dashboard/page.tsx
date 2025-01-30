@@ -1,31 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import UserType from "@/app/types/UserType";
+import React, { useEffect } from "react";
+
+import { useUserStore } from "@/store/userStore";
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [userData, setUserData] = useState<UserType | null>(null);
+  const { user: userData, loading, error, fetchUserData } = useUserStore();
 
   useEffect(() => {
-    setLoading(true);
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`/api/users/protected`);
-        console.log(response);
-        setUserData(response.data.user_data);
-      } catch (error: any) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserData();
-  }, []);
+  }, [fetchUserData]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;

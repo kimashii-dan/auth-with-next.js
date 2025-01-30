@@ -11,23 +11,10 @@ import Statistics from "@/components/Statistics";
 import ProgressBar from "@/components/ProgressBar";
 import Text from "@/components/Text";
 import Input from "@/components/Input";
+import GameType from "@/types/GameType";
 
 const initialText =
   "If a document does not have a value for the indexed field in a unique index, the index will store a null value for this document.";
-
-type State = {
-  input: string;
-  wordIndex: number;
-  charIndex: number;
-  wordsTyped: number;
-  isTyping: boolean;
-  timeLeft: number;
-  selectedTime: number;
-  wpm: number;
-  cursorIndex: number;
-  finished: boolean;
-  mistakes: number;
-};
 
 type Action =
   | { type: "INPUT_CHANGED"; payload: string }
@@ -36,7 +23,7 @@ type Action =
   | { type: "RESTART" }
   | { type: "SET_SELECTED_TIME"; payload: number };
 
-const initialState: State = {
+const initialState: GameType = {
   input: "",
   wordIndex: 0,
   charIndex: 0,
@@ -61,7 +48,7 @@ export default function Game() {
     [wordsArray]
   );
 
-  const reducer = (state: State, action: Action): State => {
+  const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
       case "INPUT_CHANGED": {
         const currentInput = action.payload;

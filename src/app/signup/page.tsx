@@ -56,7 +56,6 @@ export default function SignUpPage() {
         <h1 className="text-4xl font-medium text-center">Register</h1>
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Email Input */}
           <input
             type="email"
             {...register("email")}
@@ -68,7 +67,6 @@ export default function SignUpPage() {
             <p className="text-red-500">{errors.email.message}</p>
           )}
 
-          {/* Password Input */}
           <input
             type="password"
             {...register("password")}
@@ -80,7 +78,6 @@ export default function SignUpPage() {
             <p className="text-red-500">{errors.password.message}</p>
           )}
 
-          {/* Username Input */}
           <input
             type="text"
             {...register("username")}
@@ -92,12 +89,10 @@ export default function SignUpPage() {
             <p className="text-red-500">{errors.username.message}</p>
           )}
 
-          {/* ✅ Display API error if any */}
           {errors.root && (
             <p className="text-red-500 text-center">{errors.root.message}</p>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className={`p-2 rounded-md border-none text-lg ${
