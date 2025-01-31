@@ -14,7 +14,7 @@ import Input from "@/components/Input";
 import GameType from "@/types/GameType";
 
 const initialText =
-  "If a document does not have a value for the indexed field in a unique index, the index will store a null value for this document.";
+  "Notice first that the start and end (our two arguments) represent the index of an item.";
 
 type Action =
   | { type: "INPUT_CHANGED"; payload: string }
@@ -61,19 +61,25 @@ export default function Game() {
           newState.isTyping = true;
         }
 
+        // backspace case
         if (currentInput.length < state.input.length) {
           const expectedInput = currentWord
             .slice(0, state.charIndex - 1)
             .join("");
+          // if backspaced char was correctly typed
           if (currentInput === expectedInput) {
             newState.charIndex = state.charIndex - 1;
             newState.cursorIndex = state.cursorIndex - 1;
           }
         } else {
+          // user's inputed char
           const currentChar = currentInput[state.charIndex];
+          // char from the text
           const correctChar = currentWord[state.charIndex];
 
+          // if user's char === char from the text
           if (currentChar === correctChar) {
+            // end of the word case
             if (currentInput.length === currentWordLength) {
               newState.wordIndex += 1;
               newState.charIndex = 0;
@@ -85,19 +91,7 @@ export default function Game() {
               newState.cursorIndex += 1;
             }
 
-            if (newState.wordIndex >= wordsArray.length) {
-              const elapsedTime = newState.selectedTime - newState.timeLeft;
-              const finalWPM = Math.floor(
-                newState.wordsTyped / (elapsedTime / 60)
-              );
-              return {
-                ...newState,
-                finished: true,
-                isTyping: false,
-                wpm: finalWPM,
-              };
-            }
-
+            // end of the text case
             if (
               state.wordIndex === wordsArray.length - 1 &&
               currentInput.length === currentWordLength - 1
@@ -116,6 +110,8 @@ export default function Game() {
                 wordsTyped: newState.wordsTyped + 1,
               };
             }
+
+            // mistake case
           } else {
             newState.mistakes += 1;
           }
@@ -194,14 +190,18 @@ export default function Game() {
     if (state.finished) {
       const sendStats = async () => {
         try {
-          await axios.post("/api/users/stats", { wpm: state.wpm });
+          await axios.post("/api/users/stats", {
+            wpm: state.wpm,
+            accuracy: accuracy,
+            selectedTime: state.selectedTime,
+          });
         } catch (error) {
           console.error("Failed to submit stats:", error);
         }
       };
       sendStats();
     }
-  }, [state.finished, state.wpm]);
+  }, [accuracy, state.finished, state.selectedTime, state.wpm]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "INPUT_CHANGED", payload: e.target.value });

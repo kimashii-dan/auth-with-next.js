@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { connect } from "@/config/db";
 import Stats from "@/models/statsModel";
+import Race from "@/models/raceModel";
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
@@ -9,7 +10,7 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
-    const { wpm } = reqBody;
+    const { wpm, accuracy, selectedTime } = reqBody;
 
     const token = request.cookies.get("token")?.value;
     if (!token) {
@@ -60,6 +61,16 @@ export async function POST(request: NextRequest) {
       await stats.save();
       console.log("Stats updated:", stats);
     }
+
+    const newRace = new Race({
+      player_id: userID,
+      WPM: wpm,
+      accuracy,
+      selectedTime,
+    });
+
+    await newRace.save();
+    console.log("Race is saved", newRace);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

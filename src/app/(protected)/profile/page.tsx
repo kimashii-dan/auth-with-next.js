@@ -12,6 +12,7 @@ export default function UserProfile() {
   const {
     user: userData,
     stats: userStats,
+    races: userRaces,
     loading,
     error,
     fetchUserData,
@@ -35,7 +36,7 @@ export default function UserProfile() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="relative">
+    <div className="relative flex flex-col gap-10">
       <div className="flex flex-col justify-center gap-7 p-7 rounded-lg bg-[#2c2e31] font-roboto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -65,6 +66,29 @@ export default function UserProfile() {
         </div>
         <p>Email: {userData?.email}</p>
       </div>
+
+      <h1 className="text-4xl mt-5">Recent Races</h1>
+
+      {userRaces?.map((race) => (
+        <div
+          key={race._id}
+          className="flex justify-between py-8 px-12 rounded-lg bg-[#2c2e31] font-roboto"
+        >
+          <div className="text-[#e2b714]">
+            <p className=" text-sm">wpm:</p>
+            <span className="text-4xl">{race.WPM}</span>
+          </div>
+          <div>
+            <p className="text-[#646669] text-sm">accuracy:</p>
+            <span className="text-4xl">{race.accuracy.toFixed(2)}</span>
+          </div>
+          <div>
+            <p className="text-[#646669] text-sm">selected time:</p>
+            <span className="text-4xl">{race.selectedTime}</span>
+          </div>
+        </div>
+      ))}
+
       <div className="absolute -top-[68px] right-0">
         <button
           onClick={logout}

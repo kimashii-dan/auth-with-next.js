@@ -51,7 +51,7 @@ export default function ProtectedLayout({
       </button>
       <div className="flex-grow">{children}</div>
 
-      <div className="flex gap-4 py-5 rounded-lg items-center ">
+      <div className="flex gap-4 py-5 rounded-lg items-center mt-5">
         <Link href="https://github.com/kimashii-dan/auth-with-next.js">
           <Image
             priority={true}
