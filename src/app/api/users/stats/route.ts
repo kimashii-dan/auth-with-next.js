@@ -10,7 +10,7 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
-    const { wpm, accuracy, selectedTime } = reqBody;
+    const { wpm, accuracy, selectedTime, progress } = reqBody;
 
     const token = request.cookies.get("token")?.value;
     if (!token) {
@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
       WPM: wpm,
       accuracy,
       selectedTime,
+      progress,
     });
 
     await newRace.save();

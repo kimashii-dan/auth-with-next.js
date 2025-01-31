@@ -1,4 +1,5 @@
 interface GameType {
+  text: string;
   input: string;
   wordIndex: number;
   charIndex: number;

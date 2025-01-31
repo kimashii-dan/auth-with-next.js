@@ -29,10 +29,7 @@ export default function Text({
   }, [cursorIndex, splitted]);
 
   return (
-    <div
-      ref={textRef}
-      className="text-3xl font-roboto break-words relative leading-10"
-    >
+    <div ref={textRef} className="text-4xl font-roboto relative">
       {splitted.map((word, wordIdx) => (
         <span key={wordIdx} className="inline-block">
           {word.map((char, charIdx) => {
@@ -45,7 +42,6 @@ export default function Text({
                 data-char
                 style={{
                   color: charIndexGlobal < cursorIndex ? "#D1D0C5" : "#646669",
-                  position: "relative",
                 }}
               >
                 {char === " " ? "\u00A0" : char}
@@ -56,7 +52,7 @@ export default function Text({
       ))}
       {!finished && (
         <div
-          className={`absolute w-[3px] rounded-[5px] h-8 bg-[#e2b714] transition-all ${
+          className={`absolute w-[3px] rounded-[5px] h-10 bg-[#e2b714] transition-all ${
             isTyping ? "" : "animate-cursor"
           }`}
           style={{

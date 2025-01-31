@@ -37,7 +37,7 @@ export default function UserProfile() {
 
   return (
     <div className="relative flex flex-col gap-10">
-      <div className="flex flex-col justify-center gap-7 p-7 rounded-lg bg-[#2c2e31] font-roboto">
+      <div className="flex flex-col justify-center gap-8 p-7 rounded-lg bg-[#2c2e31] font-roboto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Image
@@ -51,7 +51,9 @@ export default function UserProfile() {
 
           <div>
             <p className="text-[#646669] text-sm">highest wpm:</p>
-            <span className="text-4xl">{userStats?.highest_WPM}</span>
+            <span className="text-4xl text-[#e2b714]">
+              {userStats?.highest_WPM}
+            </span>
           </div>
 
           <div>
@@ -64,40 +66,51 @@ export default function UserProfile() {
             <span className="text-4xl">{userStats?.races_amount}</span>
           </div>
         </div>
-        <p>Email: {userData?.email}</p>
+        <div className="flex justify-between items-center">
+          {" "}
+          <p>Email: {userData?.email}</p>{" "}
+          <button
+            onClick={logout}
+            className="bg-[#323437] p-3 rounded-md font-roboto w-32 ml-auto flex gap-2 border-[#D1D0C5]-100 border-solid border-2"
+          >
+            <Image src={ArrowRight} alt="arrow left" />
+            Logout
+          </button>
+        </div>
       </div>
 
-      <h1 className="text-4xl mt-5">Recent Races</h1>
+      <h1 className="text-4xl mt-7 font-roboto">Recent Tests</h1>
 
       {userRaces?.map((race) => (
         <div
           key={race._id}
-          className="flex justify-between py-8 px-12 rounded-lg bg-[#2c2e31] font-roboto"
+          className="flex flex-col py-8 px-10 rounded-lg bg-[#2c2e31] font-roboto gap-5"
         >
-          <div className="text-[#e2b714]">
-            <p className=" text-sm">wpm:</p>
-            <span className="text-4xl">{race.WPM}</span>
+          <div className="flex justify-between items-center">
+            <div className="flex-none">
+              <p className="text-[#646669] text-sm">wpm:</p>
+              <span className="text-3xl ">{race.WPM}</span>
+            </div>
+            <div className="mx-auto">
+              <p className="text-[#646669] text-sm">accuracy:</p>
+              <span className="text-3xl">{race.accuracy.toFixed(2)}</span>
+            </div>
+            <div className="flex-none">
+              <p className="text-[#646669] text-sm">selected time:</p>
+              <span className="text-3xl">{race.selectedTime}</span>
+            </div>
           </div>
-          <div>
-            <p className="text-[#646669] text-sm">accuracy:</p>
-            <span className="text-4xl">{race.accuracy.toFixed(2)}</span>
-          </div>
-          <div>
-            <p className="text-[#646669] text-sm">selected time:</p>
-            <span className="text-4xl">{race.selectedTime}</span>
+          <div className="flex flex-col gap-3">
+            <p className="text-[#646669] text-sm">progress:</p>
+            <div className="w-full h-2 bg-[#646669] rounded-md ">
+              <div
+                style={{ width: `${race.progress}%` }}
+                className={` h-2 bg-[#e2b714] rounded-md`}
+              ></div>
+            </div>
           </div>
         </div>
       ))}
-
-      <div className="absolute -top-[68px] right-0">
-        <button
-          onClick={logout}
-          className="bg-[#2c2e31] p-3 rounded-md font-roboto w-32 ml-auto flex gap-2"
-        >
-          <Image src={ArrowRight} alt="arrow left" />
-          Logout
-        </button>
-      </div>
     </div>
   );
 }

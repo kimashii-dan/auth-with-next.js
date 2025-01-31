@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     const races = await Race.find({ player_id: payload.id })
       .sort({ _id: -1 })
-      .limit(8);
+      .limit(5);
 
     return NextResponse.json({
       success: true,

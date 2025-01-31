@@ -19,6 +19,10 @@ const raceSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  progress: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Race = mongoose.models.Race || mongoose.model("Race", raceSchema);

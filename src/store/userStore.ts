@@ -42,6 +42,7 @@ export const useUserStore = create<UserStore>((set) => ({
         races: response.data.races_data || [],
         loading: false,
       });
+      console.log(response);
     } catch (error: any) {
       set({
         error: error.response?.data?.error || "Failed to fetch user data",

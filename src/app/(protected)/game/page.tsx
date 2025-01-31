@@ -5,6 +5,7 @@ import {
   ChangeEvent,
   useMemo,
   useReducer,
+  useState,
 } from "react";
 import axios from "axios";
 import Statistics from "@/components/Statistics";
@@ -13,10 +14,18 @@ import Text from "@/components/Text";
 import Input from "@/components/Input";
 import GameType from "@/types/GameType";
 
-const initialText =
-  "Notice first that the start and end (our two arguments) represent the index of an item.";
-
+const sampleTexts = [
+  "The quick brown fox jumps over the lazy dog. This classic pangram contains every letter of the English alphabet at least once.",
+  "Programming is the art of telling another human what one wants the computer to do. Elegant code speaks volumes in few words.",
+  "Practice makes perfect. Consistent typing practice improves speed and accuracy over time. Keep challenging yourself daily.",
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "Touch typing is a method of typing without looking at the keyboard. It increases productivity and reduces errors significantly.",
+  "In a world full of shortcuts, proper typing skills remain fundamental. Invest time in learning correct techniques for long-term benefits.",
+  "Coding marathons require both speed and endurance. Efficient typing helps developers maintain flow state and productivity for hours.",
+  "Accuracy matters as much as speed. Rushing through text with many errors defeats the purpose of effective communication.",
+];
 type Action =
+  // | { type: "GENERATE_TEXT"; payload: string }
   | { type: "INPUT_CHANGED"; payload: string }
   | { type: "TICK" }
   | { type: "FINISH_GAME" }
@@ -24,6 +33,7 @@ type Action =
   | { type: "SET_SELECTED_TIME"; payload: number };
 
 const initialState: GameType = {
+  text: "",
   input: "",
   wordIndex: 0,
   charIndex: 0,
@@ -38,18 +48,26 @@ const initialState: GameType = {
 };
 
 export default function Game() {
-  const wordsArray = useMemo(
-    () => initialText.split(" ").map((word) => [...word, " "]),
-    []
-  );
+  const [text, setText] = useState<string>("");
 
-  const totalCharacters = useMemo(
-    () => wordsArray.flat().length - 1,
-    [wordsArray]
+  const getRandomText = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * sampleTexts.length);
+    setText(sampleTexts[randomIndex]);
+  }, []);
+
+  useEffect(() => {
+    getRandomText();
+  }, [getRandomText]);
+
+  const wordsArray = useMemo(
+    () => text.split(" ").map((word) => [...word, " "]),
+    [text]
   );
 
   const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
+      // case "GENERATE_TEXT":
+      //   return { ...state, text: action.payload };
       case "INPUT_CHANGED": {
         const currentInput = action.payload;
         const currentWord = wordsArray[state.wordIndex];
@@ -161,6 +179,11 @@ export default function Game() {
     [state.wordIndex, state.charIndex, wordsArray]
   );
 
+  const totalCharacters = useMemo(
+    () => wordsArray.flat().length - (wordsArray.length > 0 ? 1 : 0),
+    [wordsArray]
+  );
+
   const progress = useMemo(
     () => Math.min((typedCharacters / totalCharacters) * 100, 100),
     [typedCharacters, totalCharacters]
@@ -194,6 +217,7 @@ export default function Game() {
             wpm: state.wpm,
             accuracy: accuracy,
             selectedTime: state.selectedTime,
+            progress: progress,
           });
         } catch (error) {
           console.error("Failed to submit stats:", error);
@@ -201,7 +225,7 @@ export default function Game() {
       };
       sendStats();
     }
-  }, [accuracy, state.finished, state.selectedTime, state.wpm]);
+  }, [accuracy, progress, state.finished, state.selectedTime, state.wpm]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "INPUT_CHANGED", payload: e.target.value });
@@ -211,11 +235,14 @@ export default function Game() {
     dispatch({ type: "SET_SELECTED_TIME", payload: time });
   }, []);
 
-  const restart = useCallback(() => dispatch({ type: "RESTART" }), []);
+  const restart = useCallback(() => {
+    dispatch({ type: "RESTART" });
+    getRandomText();
+  }, [getRandomText]);
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">
-      <div className="flex text-[#D1D0C5] flex-col gap-[65px] py-6">
+      <div className="flex text-[#D1D0C5] flex-col gap-24 py-6">
         <Statistics
           isTyping={state.isTyping}
           finished={state.finished}
