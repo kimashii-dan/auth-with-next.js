@@ -1,10 +1,14 @@
+import { Mode } from "@/enums/Mode";
+
 interface StatsProps {
   finished: boolean;
   seconds: number;
   wpm: number;
   isTyping: boolean;
-  onTimeSelect: (time: number) => void;
   accuracy: number;
+  onTimeSelect: (time: number) => void;
+  onModeSelect: (mode: Mode) => void;
+  selectedMode: Mode;
 }
 
 export default function Statistics({
@@ -12,8 +16,10 @@ export default function Statistics({
   seconds,
   wpm,
   isTyping,
-  onTimeSelect,
   accuracy,
+  onTimeSelect,
+  onModeSelect,
+  selectedMode,
 }: StatsProps) {
   return (
     <div className="h-12">
@@ -29,18 +35,38 @@ export default function Statistics({
               </div>
             </div>
           ) : (
-            <div className="text-[#646669] bg-[#2c2e31] rounded-md flex gap-5 text-lg py-3 px-4 justify-center">
-              {[15, 30, 60, 120].map((time) => (
-                <button
-                  key={time}
-                  onClick={() => onTimeSelect(time)}
-                  className={`transition-all  ${
-                    seconds === time ? "text-[#e2b714]" : "hover:text-[#D1D0C5]"
-                  }`}
-                >
-                  {time}
-                </button>
-              ))}
+            <div className="text-[#646669] bg-[#2c2e31] rounded-md flex  text-lg py-3 px-3 justify-center  items-center">
+              <div className="flex gap-10 w-1/2 justify-center">
+                {[15, 30, 60, 120].map((time) => (
+                  <button
+                    key={time}
+                    onClick={() => onTimeSelect(time)}
+                    className={`transition-all  ${
+                      seconds === time
+                        ? "text-[#e2b714]"
+                        : "hover:text-[#D1D0C5]"
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+              <hr className="h-5 w-1 bg-[#323437] border-none rounded-sm" />
+              <div className="flex gap-10 w-1/2 justify-center">
+                {Object.values(Mode).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => onModeSelect(mode)}
+                    className={`transition-all ${
+                      selectedMode === mode
+                        ? "text-[#e2b714]"
+                        : "hover:text-[#D1D0C5]"
+                    }`}
+                  >
+                    {mode.charAt(0) + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
             </div>
           )
         ) : (

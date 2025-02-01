@@ -87,17 +87,21 @@ export default function UserProfile() {
           className="flex flex-col py-8 px-10 rounded-lg bg-[#2c2e31] font-roboto gap-5"
         >
           <div className="flex justify-between items-center">
-            <div className="flex-none">
+            <div className="">
               <p className="text-[#646669] text-sm">wpm:</p>
               <span className="text-3xl ">{race.WPM}</span>
             </div>
-            <div className="mx-auto">
+            <div className="">
               <p className="text-[#646669] text-sm">accuracy:</p>
               <span className="text-3xl">{race.accuracy.toFixed(2)}</span>
             </div>
-            <div className="flex-none">
+            <div className="">
               <p className="text-[#646669] text-sm">selected time:</p>
               <span className="text-3xl">{race.selectedTime}</span>
+            </div>
+            <div className="">
+              <p className="text-[#646669] text-sm">selected mode:</p>
+              <span className="text-3xl">{race.selectedMode}</span>
             </div>
           </div>
           <div className="flex flex-col gap-3">

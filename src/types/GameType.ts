@@ -1,5 +1,9 @@
+import { Mode } from "@/enums/Mode";
+
 interface GameType {
   text: string;
+  selectedMode: Mode;
+  wordsArray: string[][];
   input: string;
   wordIndex: number;
   charIndex: number;

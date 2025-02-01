@@ -1,11 +1,13 @@
 import { ChangeEvent } from "react";
 import Image from "next/image";
 import Restart from "../../public/restart.svg";
+import { Mode } from "@/enums/Mode";
 interface InputProps {
   input: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   finished: boolean;
-  restart: () => void;
+  restart: (mode: Mode) => void;
+  selectedMode: Mode;
 }
 
 export default function Input({
@@ -13,6 +15,7 @@ export default function Input({
   handleChange,
   finished,
   restart,
+  selectedMode,
 }: InputProps) {
   return (
     <div className="flex justify-between">
@@ -26,7 +29,7 @@ export default function Input({
       />
 
       <button
-        onClick={restart}
+        onClick={() => restart(selectedMode)}
         className=" p-3 bg-[#2c2e31] cursor-pointer rounded-md flex gap-2 w-32 items-center justify-center"
       >
         Restart

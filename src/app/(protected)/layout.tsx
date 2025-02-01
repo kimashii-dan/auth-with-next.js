@@ -1,10 +1,8 @@
 "use client";
 import "../globals.css";
 import Image from "next/image";
-// import { useRouter } from "next/navigation";
 import React from "react";
 import Link from "next/link";
-// import ArrowLeft from "../../../public/arrow-left.svg";
 import Profile from "../../../public/profile.svg";
 import Github from "../../../public/github.svg";
 import Email from "../../../public/email.svg";
@@ -15,21 +13,25 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const router = useRouter();
-
   return (
-    <div className="mx-auto w-[80%] min-h-screen flex flex-col my-3 gap-5 text-[#d1d0c5]">
+    <div className="mx-auto w-[80%] min-h-screen flex flex-col my-3 gap-5 text-[#d1d0c5] ">
       <div className="flex py-5 rounded-lg items-center justify-between">
         <Link className=" flex items-center gap-2" href="/dashboard">
           <Image src={Poop} alt="logo" width={40} height={40} priority />
-          <span className="text-3xl text-[#e2b714] font-roboto">Typeshi</span>
+          <span className="text-3xl text-[#e2b714] font-roboto">typeshi</span>
         </Link>
 
-        <Link className="font-roboto text-[#e2b714] text-xl" href="/game">
+        <Link
+          className="font-roboto text-[#646669] hover:text-[#D1D0C5] text-xl transition-all"
+          href="/game"
+        >
           Play
         </Link>
 
-        <Link className="font-roboto text-[#e2b714] text-xl" href="/">
+        <Link
+          className="font-roboto text-[#646669] hover:text-[#D1D0C5] text-xl transition-all"
+          href="/"
+        >
           About
         </Link>
 
@@ -45,13 +47,6 @@ export default function ProtectedLayout({
         </Link>
       </div>
 
-      {/* <button
-        onClick={() => router.back()}
-        className="bg-[#2c2e31] p-3 rounded-md font-roboto w-32 flex gap-2"
-      >
-        <Image src={ArrowLeft} alt="arrow left" />
-        Go Back
-      </button> */}
       <div className="flex-grow">{children}</div>
 
       <div className="flex gap-4 pb-5 rounded-lg items-center ">

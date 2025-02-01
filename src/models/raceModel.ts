@@ -23,6 +23,10 @@ const raceSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  selectedMode: {
+    type: String,
+    default: "",
+  },
 });
 
 const Race = mongoose.models.Race || mongoose.model("Race", raceSchema);

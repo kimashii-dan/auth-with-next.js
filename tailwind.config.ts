@@ -21,6 +21,9 @@ export default {
       animation: {
         cursor: "blink 1s  infinite",
       },
+      width: {
+        cursor: "3px",
+      },
     },
   },
   plugins: [],

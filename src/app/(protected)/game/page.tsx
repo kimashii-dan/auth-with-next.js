@@ -5,7 +5,6 @@ import {
   ChangeEvent,
   useMemo,
   useReducer,
-  useState,
 } from "react";
 import axios from "axios";
 import Statistics from "@/components/Statistics";
@@ -13,27 +12,23 @@ import ProgressBar from "@/components/ProgressBar";
 import Text from "@/components/Text";
 import Input from "@/components/Input";
 import GameType from "@/types/GameType";
+import { getRandomSentence } from "@/util/getRandomSentence";
+import { Mode } from "@/enums/Mode";
+import { getRandomQuote } from "@/util/getRandomQuote";
+import { getRandomWords } from "@/util/getRandomWords";
 
-const sampleTexts = [
-  "The quick brown fox jumps over the lazy dog. This classic pangram contains every letter of the English alphabet at least once.",
-  "Programming is the art of telling another human what one wants the computer to do. Elegant code speaks volumes in few words.",
-  "Practice makes perfect. Consistent typing practice improves speed and accuracy over time. Keep challenging yourself daily.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Touch typing is a method of typing without looking at the keyboard. It increases productivity and reduces errors significantly.",
-  "In a world full of shortcuts, proper typing skills remain fundamental. Invest time in learning correct techniques for long-term benefits.",
-  "Coding marathons require both speed and endurance. Efficient typing helps developers maintain flow state and productivity for hours.",
-  "Accuracy matters as much as speed. Rushing through text with many errors defeats the purpose of effective communication.",
-];
 type Action =
-  // | { type: "GENERATE_TEXT"; payload: string }
+  | { type: "GENERATE_TEXT"; payload: { mode: Mode; text: string } }
   | { type: "INPUT_CHANGED"; payload: string }
   | { type: "TICK" }
   | { type: "FINISH_GAME" }
-  | { type: "RESTART" }
+  | { type: "RESTART"; payload: string }
   | { type: "SET_SELECTED_TIME"; payload: number };
 
 const initialState: GameType = {
   text: "",
+  selectedMode: Mode.SENTENCE,
+  wordsArray: [],
   input: "",
   wordIndex: 0,
   charIndex: 0,
@@ -48,29 +43,32 @@ const initialState: GameType = {
 };
 
 export default function Game() {
-  const [text, setText] = useState<string>("");
-
-  const getRandomText = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * sampleTexts.length);
-    setText(sampleTexts[randomIndex]);
-  }, []);
-
-  useEffect(() => {
-    getRandomText();
-  }, [getRandomText]);
-
-  const wordsArray = useMemo(
-    () => text.split(" ").map((word) => [...word, " "]),
-    [text]
-  );
-
   const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
-      // case "GENERATE_TEXT":
-      //   return { ...state, text: action.payload };
+      case "GENERATE_TEXT": {
+        return {
+          ...state,
+          text: action.payload.text,
+          wordsArray: action.payload.text
+            .split(" ")
+            .map((word) => [...word, " "]),
+          selectedMode: action.payload.mode,
+          input: "",
+          wordIndex: 0,
+          charIndex: 0,
+          wordsTyped: 0,
+          isTyping: false,
+          cursorIndex: 0,
+          finished: false,
+          mistakes: 0,
+          wpm: 0,
+          timeLeft: state.selectedTime,
+        };
+      }
+
       case "INPUT_CHANGED": {
         const currentInput = action.payload;
-        const currentWord = wordsArray[state.wordIndex];
+        const currentWord = state.wordsArray[state.wordIndex];
         const currentWordLength = currentWord.length;
 
         const newState = { ...state, input: currentInput };
@@ -111,7 +109,7 @@ export default function Game() {
 
             // end of the text case
             if (
-              state.wordIndex === wordsArray.length - 1 &&
+              state.wordIndex === state.wordsArray.length - 1 &&
               currentInput.length === currentWordLength - 1
             ) {
               const elapsedTime = newState.selectedTime - newState.timeLeft;
@@ -121,7 +119,7 @@ export default function Game() {
               return {
                 ...newState,
                 input: "",
-                wordIndex: wordsArray.length,
+                wordIndex: state.wordsArray.length,
                 finished: true,
                 isTyping: false,
                 wpm: finalWPM,
@@ -154,17 +152,32 @@ export default function Game() {
       }
 
       case "RESTART":
+        const newText = getRandomSentence();
         return {
           ...initialState,
+          selectedMode: state.selectedMode,
           selectedTime: state.selectedTime,
           timeLeft: state.selectedTime,
+          text: newText,
+          wordsArray: newText.split(" ").map((word) => [...word, " "]),
         };
 
       case "SET_SELECTED_TIME":
         return {
-          ...initialState,
+          ...state,
+          text: state.text,
+          selectedMode: state.selectedMode,
           selectedTime: action.payload,
           timeLeft: action.payload,
+          input: "",
+          wordIndex: 0,
+          charIndex: 0,
+          wordsTyped: 0,
+          isTyping: false,
+          cursorIndex: 0,
+          finished: false,
+          mistakes: 0,
+          wpm: 0,
         };
 
       default:
@@ -174,14 +187,25 @@ export default function Game() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    const newText = getRandomSentence();
+    dispatch({
+      type: "GENERATE_TEXT",
+      payload: { mode: Mode.SENTENCE, text: newText },
+    });
+  }, []);
+
   const typedCharacters = useMemo(
-    () => wordsArray.slice(0, state.wordIndex).flat().length + state.charIndex,
-    [state.wordIndex, state.charIndex, wordsArray]
+    () =>
+      state.wordsArray.slice(0, state.wordIndex).flat().length +
+      state.charIndex,
+    [state.charIndex, state.wordIndex, state.wordsArray]
   );
 
   const totalCharacters = useMemo(
-    () => wordsArray.flat().length - (wordsArray.length > 0 ? 1 : 0),
-    [wordsArray]
+    () =>
+      state.wordsArray.flat().length - (state.wordsArray.length > 0 ? 1 : 0),
+    [state.wordsArray]
   );
 
   const progress = useMemo(
@@ -218,6 +242,7 @@ export default function Game() {
             accuracy: accuracy,
             selectedTime: state.selectedTime,
             progress: progress,
+            selectedMode: state.selectedMode,
           });
         } catch (error) {
           console.error("Failed to submit stats:", error);
@@ -225,7 +250,14 @@ export default function Game() {
       };
       sendStats();
     }
-  }, [accuracy, progress, state.finished, state.selectedTime, state.wpm]);
+  }, [
+    accuracy,
+    progress,
+    state.finished,
+    state.selectedMode,
+    state.selectedTime,
+    state.wpm,
+  ]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "INPUT_CHANGED", payload: e.target.value });
@@ -235,10 +267,25 @@ export default function Game() {
     dispatch({ type: "SET_SELECTED_TIME", payload: time });
   }, []);
 
-  const restart = useCallback(() => {
-    dispatch({ type: "RESTART" });
-    getRandomText();
-  }, [getRandomText]);
+  const handleModeSelect = useCallback(async (mode: Mode) => {
+    let newText = "";
+    if (mode === Mode.SENTENCE) {
+      newText = getRandomSentence();
+    } else if (mode === Mode.QUOTE) {
+      const response = await getRandomQuote();
+      newText = response.quote;
+    } else if (mode === Mode.WORDS) {
+      const response = await getRandomWords();
+      newText = response.join(" ");
+    }
+
+    dispatch({ type: "GENERATE_TEXT", payload: { mode, text: newText } });
+  }, []);
+
+  // const restart = useCallback(() => {
+  //   const currentMode = state.selectedMode;
+  //   dispatch({ type: "RESTART" });
+  // }, []);
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">
@@ -250,12 +297,14 @@ export default function Game() {
           wpm={state.wpm}
           onTimeSelect={handleTimeSelect}
           accuracy={accuracy}
+          selectedMode={state.selectedMode}
+          onModeSelect={handleModeSelect}
         />
 
         <ProgressBar progress={progress} />
 
         <Text
-          splitted={wordsArray}
+          splitted={state.wordsArray}
           isTyping={state.isTyping}
           finished={state.finished}
           cursorIndex={state.cursorIndex}
@@ -265,7 +314,8 @@ export default function Game() {
           input={state.input}
           handleChange={handleChange}
           finished={state.finished}
-          restart={restart}
+          restart={handleModeSelect}
+          selectedMode={state.selectedMode}
         />
       </div>
     </div>
