@@ -6,7 +6,8 @@ import "../../globals.css";
 import { useUserStore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
 import ArrowRight from "../../../../public/arrow-right.svg";
-import axios from "axios";
+
+import api from "@/util/axiosInstance";
 
 export default function UserProfile() {
   const {
@@ -16,6 +17,7 @@ export default function UserProfile() {
     loading,
     error,
     fetchUserData,
+    setAccessToken,
   } = useUserStore();
   const router = useRouter();
 
@@ -25,7 +27,8 @@ export default function UserProfile() {
 
   async function logout() {
     try {
-      await axios.get("/api/users/logout");
+      setAccessToken(null);
+      await api.get("/users/logout");
       router.push("/login");
     } catch (error: any) {
       console.error(error.response?.data?.error || "Logout failed");

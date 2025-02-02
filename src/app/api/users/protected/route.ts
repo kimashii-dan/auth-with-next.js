@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,10 +10,12 @@ connect();
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("token")?.value;
-
+    const token = request.headers.get("Authorization")?.split(" ")[1];
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Access token missing" },
+        { status: 401 }
+      );
     }
 
     const { payload } = await jwtVerify(
@@ -41,9 +42,10 @@ export async function GET(request: NextRequest) {
       races_data: races,
     });
   } catch (error: any) {
+    console.log(error);
     return NextResponse.json(
-      { error: "Invalid token or server error" },
-      { status: 500 }
+      { error: "Access token expired or invalid" },
+      { status: 403 }
     );
   }
 }

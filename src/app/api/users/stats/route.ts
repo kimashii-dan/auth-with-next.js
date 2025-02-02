@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { wpm, accuracy, selectedTime, progress, selectedMode } = reqBody;
 
-    const token = request.cookies.get("token")?.value;
+    const token = request.headers.get("Authorization")?.split(" ")[1];
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized: No token provided" },

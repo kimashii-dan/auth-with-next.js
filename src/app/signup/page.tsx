@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserStore } from "@/store/userStore";
+import api from "@/util/axiosInstance";
 
 const userSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -17,6 +18,7 @@ const userSchema = z.object({
 type UserFormData = z.infer<typeof userSchema>;
 
 export default function SignUpPage() {
+  const { setAccessToken } = useUserStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -33,8 +35,9 @@ export default function SignUpPage() {
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
     try {
-      const response = await axios.post("api/users/signup", data);
-      if (response.data.success) {
+      const response = await api.post("/users/signup", data);
+      if (response.data.success === true) {
+        setAccessToken(response.data.accessToken);
         router.push("/dashboard");
       }
     } catch (error: any) {

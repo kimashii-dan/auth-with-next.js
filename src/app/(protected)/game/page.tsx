@@ -6,7 +6,6 @@ import {
   useMemo,
   useReducer,
 } from "react";
-import axios from "axios";
 import Statistics from "@/components/Statistics";
 import ProgressBar from "@/components/ProgressBar";
 import Text from "@/components/Text";
@@ -16,6 +15,8 @@ import { getRandomSentence } from "@/util/getRandomSentence";
 import { Mode } from "@/enums/Mode";
 import { getRandomQuote } from "@/util/getRandomQuote";
 import { getRandomWords } from "@/util/getRandomWords";
+import api from "@/util/axiosInstance";
+import { useUserStore } from "@/store/userStore";
 
 type Action =
   | { type: "GENERATE_TEXT"; payload: { mode: Mode; text: string } }
@@ -43,6 +44,7 @@ const initialState: GameType = {
 };
 
 export default function Game() {
+  const accessToken = useUserStore.getState().accessToken;
   const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
       case "GENERATE_TEXT": {
@@ -237,13 +239,21 @@ export default function Game() {
     if (state.finished) {
       const sendStats = async () => {
         try {
-          await axios.post("/api/users/stats", {
-            wpm: state.wpm,
-            accuracy: accuracy,
-            selectedTime: state.selectedTime,
-            progress: progress,
-            selectedMode: state.selectedMode,
-          });
+          await api.post(
+            "/users/stats",
+            {
+              wpm: state.wpm,
+              accuracy: accuracy,
+              selectedTime: state.selectedTime,
+              progress: progress,
+              selectedMode: state.selectedMode,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
         } catch (error) {
           console.error("Failed to submit stats:", error);
         }
@@ -251,6 +261,7 @@ export default function Game() {
       sendStats();
     }
   }, [
+    accessToken,
     accuracy,
     progress,
     state.finished,
@@ -281,11 +292,6 @@ export default function Game() {
 
     dispatch({ type: "GENERATE_TEXT", payload: { mode, text: newText } });
   }, []);
-
-  // const restart = useCallback(() => {
-  //   const currentMode = state.selectedMode;
-  //   dispatch({ type: "RESTART" });
-  // }, []);
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">

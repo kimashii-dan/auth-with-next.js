@@ -42,28 +42,38 @@ export async function POST(request: NextRequest) {
     const newStats = new Stats({ player_id: user._id });
     await newStats.save();
 
-    const tokenData = {
+    const accessTokenData = {
       id: user._id,
       username: user.username,
       email: user.email,
     };
 
+    const refreshTokenData = {
+      id: user._id,
+    };
+
     const encoder = new TextEncoder();
-    const token = await new SignJWT(tokenData)
+    const accessToken = await new SignJWT(accessTokenData)
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
-      .setExpirationTime("1d")
+      .setExpirationTime("15m")
+      .sign(encoder.encode(process.env.TOKEN_SECRET));
+
+    const refreshToken = await new SignJWT(refreshTokenData)
+      .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      .setExpirationTime("7d")
       .sign(encoder.encode(process.env.TOKEN_SECRET));
 
     const response = NextResponse.json({
       message: "Sign-up successful",
       success: true,
-      id: user._id,
+      accessToken: accessToken,
     });
 
-    response.cookies.set("token", token, {
+    response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 86400,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60,
     });
 
     return response;
