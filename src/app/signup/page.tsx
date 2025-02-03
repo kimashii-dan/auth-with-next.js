@@ -6,19 +6,17 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUserStore } from "@/store/userStore";
 import api from "@/util/axiosInstance";
 
 const userSchema = z.object({
   email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
+  password: z.string().min(6, "Password must be at least 3 characters long"),
   username: z.string().min(3, "Username must be at least 3 characters long"),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
 
 export default function SignUpPage() {
-  const { setAccessToken } = useUserStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +35,7 @@ export default function SignUpPage() {
     try {
       const response = await api.post("/users/signup", data);
       if (response.data.success === true) {
-        setAccessToken(response.data.accessToken);
+        localStorage.setItem("accessToken", response.data.accessToken);
         router.push("/dashboard");
       }
     } catch (error: any) {

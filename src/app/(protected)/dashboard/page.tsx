@@ -14,12 +14,12 @@ export default function Dashboard() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   return (
-    <div className="flex flex-col justify-center gap-7 p-7 rounded-lg bg-[#2c2e31] font-roboto">
+    <div className="flex flex-col justify-center gap-8 p-7 rounded-lg bg-[#2c2e31] font-roboto">
       <h1 className="text-4xl">Welcome {userData?.username}!</h1>
 
       <Link
         href={"/game"}
-        className="bg-[#e2b714] text-[#2c2e31] w-fit p-3 rounded-md font-medium"
+        className="bg-[#e2b714] text-[#2c2e31] w-1/6 p-4 rounded-md font-medium text-lg hover:-translate-y-1 transition-all text-center"
       >
         <span>Start game</span>
       </Link>

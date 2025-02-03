@@ -11,13 +11,12 @@ interface UserStore {
   races: RaceTypes[] | null;
   loading: boolean;
   error: string | null;
-  accessToken: string | null;
+
   setUser: (user: UserType) => void;
   setStats: (stats: StatsType) => void;
   setRaces: (race: RaceTypes[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setAccessToken: (accessToken: string | null) => void;
   fetchUserData: () => Promise<void>;
   clearUser: () => void;
 }
@@ -28,26 +27,17 @@ export const useUserStore = create<UserStore>((set) => ({
   races: null,
   loading: false,
   error: null,
-  accessToken:
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null,
+
   setUser: (user) => set({ user }),
   setStats: (stats) => set({ stats }),
   setRaces: (races) => set({ races }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
-  setAccessToken: (accessToken) => {
-    if (typeof window !== "undefined") {
-      if (accessToken) {
-        localStorage.setItem("accessToken", accessToken);
-      } else {
-        localStorage.removeItem("accessToken");
-      }
-    }
-    set({ accessToken });
-  },
+
   fetchUserData: async () => {
     set({ loading: true, error: null });
-    const accessToken = useUserStore.getState().accessToken;
+    const accessToken = localStorage.getItem("accessToken");
+    console.log("userStore:", accessToken);
     try {
       const response = await api.get(`/users/protected`, {
         headers: {
@@ -68,11 +58,9 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
   clearUser: () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-    }
+    localStorage.removeItem("accessToken");
+
     set({
-      accessToken: null,
       user: null,
       stats: null,
       races: null,

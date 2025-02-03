@@ -17,7 +17,7 @@ export default function UserProfile() {
     loading,
     error,
     fetchUserData,
-    setAccessToken,
+    clearUser,
   } = useUserStore();
   const router = useRouter();
 
@@ -27,7 +27,7 @@ export default function UserProfile() {
 
   async function logout() {
     try {
-      setAccessToken(null);
+      clearUser();
       await api.get("/users/logout");
       router.push("/login");
     } catch (error: any) {
@@ -74,7 +74,7 @@ export default function UserProfile() {
           <p>Email: {userData?.email}</p>{" "}
           <button
             onClick={logout}
-            className="bg-[#323437] p-3 rounded-md font-roboto w-32 ml-auto flex gap-2 border-[#D1D0C5]-100 border-solid border-2"
+            className="bg-[#323437] p-3 rounded-md font-roboto w-32 ml-auto flex gap-2 border-[#D1D0C5]-100 border-solid border-2 hover:-translate-y-1 transition-all"
           >
             <Image src={ArrowRight} alt="arrow left" />
             Logout

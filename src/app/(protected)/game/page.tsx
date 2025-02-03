@@ -16,7 +16,6 @@ import { Mode } from "@/enums/Mode";
 import { getRandomQuote } from "@/util/getRandomQuote";
 import { getRandomWords } from "@/util/getRandomWords";
 import api from "@/util/axiosInstance";
-import { useUserStore } from "@/store/userStore";
 
 type Action =
   | { type: "GENERATE_TEXT"; payload: { mode: Mode; text: string } }
@@ -44,7 +43,8 @@ const initialState: GameType = {
 };
 
 export default function Game() {
-  const accessToken = useUserStore.getState().accessToken;
+  const accessToken = localStorage.getItem("accessToken");
+  console.log("game:", accessToken);
   const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
       case "GENERATE_TEXT": {

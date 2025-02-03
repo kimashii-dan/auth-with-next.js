@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     const { payload } = await jwtVerify(
       token,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
+      new TextEncoder().encode(process.env.TOKEN_SECRET!)
     );
 
     const user = await User.findById(payload.id);

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useUserStore } from "@/store/userStore";
 import api from "@/util/axiosInstance";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -17,7 +16,6 @@ const userSchema = z.object({
 type UserFormData = z.infer<typeof userSchema>;
 
 export default function LoginPage() {
-  const { setAccessToken } = useUserStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +35,7 @@ export default function LoginPage() {
       const response = await api.post("/users/login", data);
       if (response.data.success === true) {
         console.log("client", response.data.accessToken);
-        setAccessToken(response.data.accessToken);
+        localStorage.setItem("accessToken", response.data.accessToken);
         router.push("/dashboard");
       }
     } catch (error: any) {

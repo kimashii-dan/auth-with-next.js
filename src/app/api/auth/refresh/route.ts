@@ -22,8 +22,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
+    const accessTokenData = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
     const encoder = new TextEncoder();
-    const accessToken = await new SignJWT({ id: user._id, email: user.email })
+    const accessToken = await new SignJWT(accessTokenData)
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("15m")
       .sign(encoder.encode(process.env.TOKEN_SECRET!));

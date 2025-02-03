@@ -30,10 +30,12 @@ export default function Input({
 
       <button
         onClick={() => restart(selectedMode)}
-        className=" p-3 bg-[#2c2e31] cursor-pointer rounded-md flex gap-2 w-32 items-center justify-center"
+        className="p-3 bg-[#2c2e31] cursor-pointer rounded-md flex gap-2 w-32 items-center justify-center  transition-all group"
       >
         Restart
-        <Image src={Restart} alt="restart" />
+        <div className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-[360deg]">
+          <Image src={Restart} alt="restart" />
+        </div>
       </button>
     </div>
   );
