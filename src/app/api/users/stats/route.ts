@@ -11,14 +11,14 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { wpm, accuracy, selectedTime, progress, selectedMode } = reqBody;
-
-    const token = request.headers.get("Authorization")?.split(" ")[1];
-    if (!token) {
+    const accessTokenCookie = request.cookies.get("accessToken");
+    if (!accessTokenCookie) {
       return NextResponse.json(
-        { error: "Unauthorized: No token provided" },
+        { error: "Access token missing" },
         { status: 401 }
       );
     }
+    const token = accessTokenCookie.value;
 
     const { payload } = await jwtVerify(
       token,

@@ -33,19 +33,13 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const response = await api.post("/users/login", data);
-      if (response.data.success === true) {
-        console.log("client", response.data.accessToken);
-        localStorage.setItem("accessToken", response.data.accessToken);
-        router.push("/dashboard");
-      }
+      console.log(response);
+      router.push("/dashboard");
     } catch (error: any) {
-      console.log(error);
-      if (error.response?.data?.error) {
-        setError("root", {
-          type: "server",
-          message: error.response.data.error,
-        });
-      }
+      setError("root", {
+        type: "server",
+        message: error.response.data.error,
+      });
     } finally {
       setLoading(false);
     }

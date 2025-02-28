@@ -10,8 +10,9 @@ connect();
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get("Authorization")?.split(" ")[1];
-    if (!token) {
+    const accessToken = request.cookies.get("accessToken")?.value;
+    if (!accessToken) {
+      console.log("hey");
       return NextResponse.json(
         { error: "Access token missing" },
         { status: 401 }
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { payload } = await jwtVerify(
-      token,
+      accessToken,
       new TextEncoder().encode(process.env.TOKEN_SECRET!)
     );
 

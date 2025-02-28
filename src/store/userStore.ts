@@ -36,14 +36,8 @@ export const useUserStore = create<UserStore>((set) => ({
 
   fetchUserData: async () => {
     set({ loading: true, error: null });
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("userStore:", accessToken);
     try {
-      const response = await api.get(`/users/protected`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await api.get(`/users/protected`);
       set({
         user: response.data.user_data,
         stats: response.data.stats_data,

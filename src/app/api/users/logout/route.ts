@@ -7,9 +7,16 @@ export async function GET() {
       message: "Logout sucess",
       success: true,
     });
+
+    response.cookies.set("accessToken", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 0,
+    });
     response.cookies.set("refreshToken", "", {
       httpOnly: true,
-      expires: new Date(0),
+      sameSite: "strict",
+      maxAge: 0,
     });
 
     return response;

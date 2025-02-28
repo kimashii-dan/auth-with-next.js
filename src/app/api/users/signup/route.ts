@@ -66,7 +66,13 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       message: "Sign-up successful",
       success: true,
-      accessToken: accessToken,
+    });
+
+    response.cookies.set("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 15 * 60,
     });
 
     response.cookies.set("refreshToken", refreshToken, {

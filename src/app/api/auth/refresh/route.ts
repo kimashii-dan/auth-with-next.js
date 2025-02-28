@@ -34,7 +34,18 @@ export async function POST(request: NextRequest) {
       .setExpirationTime("15m")
       .sign(encoder.encode(process.env.TOKEN_SECRET!));
 
-    return NextResponse.json({ accessToken });
+    const response = NextResponse.json({
+      message: "Token refreshed successfully",
+    });
+
+    response.cookies.set("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 15 * 60,
+    });
+
+    return response;
   } catch (error) {
     console.log(error);
     return NextResponse.json(

@@ -70,8 +70,7 @@ export default function UserProfile() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          {" "}
-          <p>Email: {userData?.email}</p>{" "}
+          <p>Email: {userData?.email}</p>
           <button
             onClick={logout}
             className="bg-[#323437] p-3 rounded-md font-roboto w-32 ml-auto flex gap-2 border-[#D1D0C5]-100 border-solid border-2 hover:-translate-y-1 transition-all"

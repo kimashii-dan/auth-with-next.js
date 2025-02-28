@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { useUserStore } from "@/store/userStore";
+import { redirect } from "next/navigation";
 
 const api = axios.create({
   baseURL: "/api",
@@ -15,28 +16,28 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await axios.post(
+        await axios.post(
           "/api/auth/refresh",
           {},
-          { withCredentials: true }
+          {
+            withCredentials: true,
+          }
         );
-        const newToken = refreshResponse.data.accessToken;
-        console.log(newToken);
-        localStorage.setItem("accessToken", newToken);
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
         return api(originalRequest);
-      } catch (error) {
-        useUserStore.getState().clearUser();
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
-        return Promise.reject(error);
+      } catch (error: any) {
+        console.log(error);
+        try {
+          await axios.post("/api/auth/logout", {}, { withCredentials: true });
+        } catch (logoutError) {
+          console.error("Failed to delete tokens:", logoutError);
+        }
+        redirect("/login");
       }
     }
 
     if (error.response?.status === 401) {
-      useUserStore.getState().clearUser();
-      localStorage.removeItem("accessToken");
-      window.location.href = "/login";
+      redirect("/login");
     }
 
     return Promise.reject(error);
