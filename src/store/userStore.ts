@@ -2,19 +2,19 @@
 import UserType from "@/types/UserType";
 import StatsType from "@/types/StatsType";
 import { create } from "zustand";
-import RaceTypes from "@/types/RaceType";
+import RaceType from "@/types/RaceType";
 import api from "@/util/axiosInstance";
 
 interface UserStore {
   user: UserType | null;
   stats: StatsType | null;
-  races: RaceTypes[] | null;
+  races: RaceType[] | null;
   loading: boolean;
   error: string | null;
 
   setUser: (user: UserType) => void;
   setStats: (stats: StatsType) => void;
-  setRaces: (race: RaceTypes[]) => void;
+  setRaces: (race: RaceType[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   fetchUserData: () => Promise<void>;

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import Loader from "./Loader";
 
 interface TextProps {
-  splitted: string[][]; // each element can be thought of as a “word” (an array of characters)
+  splitted: string[][];
   finished: boolean;
   isTyping: boolean;
   cursorIndex: number;
