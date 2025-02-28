@@ -295,7 +295,7 @@ export default function Game() {
 
   return (
     <div className="flex flex-col justify-center gap-7 rounded-lg font-roboto">
-      <div className="flex text-[#D1D0C5] flex-col gap-24 py-6">
+      <div className="flex text-[#D1D0C5] flex-col gap-[70px] py-3">
         <Statistics
           isTyping={state.isTyping}
           finished={state.finished}
