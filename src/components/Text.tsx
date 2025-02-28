@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
+import Loader from "./Loader";
 
 interface TextProps {
   splitted: string[][];
   finished: boolean;
   isTyping: boolean;
   cursorIndex: number;
+  loading: boolean;
+  error: string;
 }
 
 export default function Text({
@@ -12,6 +15,8 @@ export default function Text({
   finished,
   isTyping,
   cursorIndex,
+  loading,
+  error,
 }: TextProps) {
   const textRef = useRef<HTMLDivElement>(null);
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
@@ -27,6 +32,9 @@ export default function Text({
       setCursorPosition({ top: offsetTop, left: offsetLeft });
     }
   }, [cursorIndex, splitted]);
+
+  if (loading) return <Loader />;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div ref={textRef} className="text-4xl font-roboto relative leading-snug">

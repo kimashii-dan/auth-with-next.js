@@ -11,17 +11,17 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { wpm, accuracy, selectedTime, progress, selectedMode } = reqBody;
-    const accessTokenCookie = request.cookies.get("accessToken");
-    if (!accessTokenCookie) {
+    const accessToken = request.cookies.get("accessToken")?.value;
+    if (!accessToken) {
+      console.log("hey");
       return NextResponse.json(
         { error: "Access token missing" },
         { status: 401 }
       );
     }
-    const token = accessTokenCookie.value;
 
     const { payload } = await jwtVerify(
-      token,
+      accessToken,
       new TextEncoder().encode(process.env.TOKEN_SECRET!)
     );
 

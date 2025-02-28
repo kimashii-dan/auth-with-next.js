@@ -37,7 +37,9 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchUserData: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get(`/users/protected`);
+      const response = await api.get(`/users/protected`, {
+        withCredentials: true,
+      });
       set({
         user: response.data.user_data,
         stats: response.data.stats_data,
@@ -52,8 +54,6 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
   clearUser: () => {
-    localStorage.removeItem("accessToken");
-
     set({
       user: null,
       stats: null,

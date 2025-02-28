@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
   useEffect,
@@ -5,6 +6,7 @@ import {
   ChangeEvent,
   useMemo,
   useReducer,
+  useState,
 } from "react";
 import Statistics from "@/components/Statistics";
 import ProgressBar from "@/components/ProgressBar";
@@ -43,8 +45,8 @@ const initialState: GameType = {
 };
 
 export default function Game() {
-  const accessToken = localStorage.getItem("accessToken");
-  console.log("game:", accessToken);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const reducer = (state: GameType, action: Action): GameType => {
     switch (action.type) {
       case "GENERATE_TEXT": {
@@ -239,21 +241,13 @@ export default function Game() {
     if (state.finished) {
       const sendStats = async () => {
         try {
-          await api.post(
-            "/users/stats",
-            {
-              wpm: state.wpm,
-              accuracy: accuracy,
-              selectedTime: state.selectedTime,
-              progress: progress,
-              selectedMode: state.selectedMode,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
+          await api.post("/users/stats", {
+            wpm: state.wpm,
+            accuracy: accuracy,
+            selectedTime: state.selectedTime,
+            progress: progress,
+            selectedMode: state.selectedMode,
+          });
         } catch (error) {
           console.error("Failed to submit stats:", error);
         }
@@ -261,7 +255,6 @@ export default function Game() {
       sendStats();
     }
   }, [
-    accessToken,
     accuracy,
     progress,
     state.finished,
@@ -280,14 +273,21 @@ export default function Game() {
 
   const handleModeSelect = useCallback(async (mode: Mode) => {
     let newText = "";
-    if (mode === Mode.SENTENCE) {
-      newText = getRandomSentence();
-    } else if (mode === Mode.QUOTE) {
-      const response = await getRandomQuote();
-      newText = response.quote;
-    } else if (mode === Mode.WORDS) {
-      const response = await getRandomWords();
-      newText = response.join(" ");
+    try {
+      setLoading(true);
+      if (mode === Mode.SENTENCE) {
+        newText = getRandomSentence();
+      } else if (mode === Mode.QUOTE) {
+        const response = await getRandomQuote();
+        newText = response.quote;
+      } else if (mode === Mode.WORDS) {
+        const response = await getRandomWords();
+        newText = response.join(" ");
+      }
+    } catch (error: any) {
+      setError(error);
+    } finally {
+      setLoading(false);
     }
 
     dispatch({ type: "GENERATE_TEXT", payload: { mode, text: newText } });
@@ -314,6 +314,8 @@ export default function Game() {
           isTyping={state.isTyping}
           finished={state.finished}
           cursorIndex={state.cursorIndex}
+          loading={loading}
+          error={error}
         />
 
         <Input

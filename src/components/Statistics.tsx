@@ -43,8 +43,8 @@ export default function Statistics({
                     onClick={() => onTimeSelect(time)}
                     className={`transition-all  ${
                       seconds === time
-                        ? "text-[#e2b714]"
-                        : "hover:text-[#D1D0C5]"
+                        ? "text-[#e2b714] "
+                        : "hover:text-[#e2b714] focus:text-[#e2b714]"
                     }`}
                   >
                     {time}
@@ -59,8 +59,8 @@ export default function Statistics({
                     onClick={() => onModeSelect(mode)}
                     className={`transition-all ${
                       selectedMode === mode
-                        ? "text-[#e2b714]"
-                        : "hover:text-[#D1D0C5]"
+                        ? "text-[#e2b714] "
+                        : "hover:text-[#D1D0C5] focus:text-[#D1D0C5]"
                     }`}
                   >
                     {mode.charAt(0) + mode.slice(1)}

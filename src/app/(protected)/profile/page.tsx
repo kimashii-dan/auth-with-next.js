@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import "../../globals.css";
 import { useUserStore } from "@/store/userStore";
@@ -14,16 +14,9 @@ export default function UserProfile() {
     user: userData,
     stats: userStats,
     races: userRaces,
-    loading,
-    error,
-    fetchUserData,
     clearUser,
   } = useUserStore();
   const router = useRouter();
-
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
 
   async function logout() {
     try {
@@ -34,9 +27,6 @@ export default function UserProfile() {
       console.error(error.response?.data?.error || "Logout failed");
     }
   }
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div className="relative flex flex-col gap-10">

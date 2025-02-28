@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { redirect } from "next/navigation";
-
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
@@ -12,7 +10,10 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 403 && !originalRequest._retry) {
+    if (
+      error.response?.status === 403 ||
+      (error.response?.status === 401 && !originalRequest._retry)
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -32,14 +33,9 @@ api.interceptors.response.use(
         } catch (logoutError) {
           console.error("Failed to delete tokens:", logoutError);
         }
-        redirect("/login");
+        window.location.href = "/login";
       }
     }
-
-    if (error.response?.status === 401) {
-      redirect("/login");
-    }
-
     return Promise.reject(error);
   }
 );
