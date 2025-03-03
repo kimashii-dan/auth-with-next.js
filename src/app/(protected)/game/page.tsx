@@ -324,6 +324,7 @@ export default function Game() {
           finished={state.finished}
           restart={handleModeSelect}
           selectedMode={state.selectedMode}
+          isTyping={state.isTyping}
         />
       </div>
     </div>

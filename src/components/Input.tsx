@@ -1,13 +1,15 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import Image from "next/image";
 import Restart from "../../public/restart.svg";
 import { Mode } from "@/enums/Mode";
+import TextImage from "../../public/images/text.png";
 interface InputProps {
   input: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   finished: boolean;
   restart: (mode: Mode) => void;
   selectedMode: Mode;
+  isTyping: boolean;
 }
 
 export default function Input({
@@ -16,9 +18,24 @@ export default function Input({
   finished,
   restart,
   selectedMode,
+  isTyping,
 }: InputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between relative">
+      {!isTyping && (
+        <div className="absolute -left-24 top-14">
+          <Image src={TextImage} alt="text here" width={75} />
+        </div>
+      )}
+
       <input
         type="text"
         placeholder="Type the above text here when the race begins..."
@@ -26,6 +43,7 @@ export default function Input({
         onChange={handleChange}
         disabled={finished}
         className="w-[45%] text-lg text-[#D1D0C5] p-3 bg-[#2c2e31] rounded-md placeholder:text-[#646669]"
+        ref={inputRef}
       />
 
       <button

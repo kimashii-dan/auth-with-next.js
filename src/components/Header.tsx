@@ -13,7 +13,7 @@ export default function Header() {
     <div className="flex py-5 rounded-lg items-center justify-between">
       <Link
         className="flex items-center gap-2 w-fit transition-all duration-200"
-        href="/dashboard"
+        href="/"
       >
         <Image src={Poop} alt="logo" width={40} height={40} priority />
         <span className="text-3xl text-[#e2b714] font-roboto">typeshi</span>

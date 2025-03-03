@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
         new TextEncoder().encode(process.env.TOKEN_SECRET)
       );
       if (isPublicPath) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(new URL("/", request.url));
       }
       return NextResponse.next();
     } catch (error) {
@@ -33,5 +33,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/login", "/signup", "/dashboard", "/game"],
+  matcher: ["/profile", "/login", "/signup", "/", "/game"],
 };

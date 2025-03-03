@@ -14,7 +14,7 @@ export default function About() {
         </strong>{" "}
         with different amount of time - 15, 30, 60, 120 seconds. At the profile
         page user can see the best score, average score and recent tests. As
-        inspiration I steal{" "}
+        inspiration I stole{" "}
         <Link href="https://monkeytype.com/" className="underline">
           monkeytype
         </Link>{" "}
@@ -39,17 +39,17 @@ export default function About() {
         I definitely improved my fullstack skills while developing this project.
         I also learned how to use state managers like Zustand for global state,
         and useReducer for local state. To enhance this app I should probably
-        make profile, dashboard pages to be client components because there are
+        make profile, dashboard pages to be server components because there are
         a fewer DOM interactions. And maybe use URL as a state manager.
       </p>
       <h1 className="text-4xl">Challenges</h1>
       <p className="text-xl">
-        The cursor thing and fixed window size at the game page wasn&apos;t
-        easy. Spend good amount of time to figure out how I can stick that
-        cursor to charIndex. Struggled a little bit with backspaces in a game
-        itself because there can be different cases. Tried to implement server
-        components, but something was generally off with axios instance, and I
-        just left it as it is.
+        The cursor thing and fixed size of the window at the game page
+        wasn&apos;t easy. Spend good amount of time to figure out how I can
+        stick that cursor to charIndex. Struggled a little bit with backspaces
+        in a game itself because there can be different cases. Now I am trying
+        to extend axios instance in order to take requests from both client and
+        server side.
       </p>
     </div>
   );

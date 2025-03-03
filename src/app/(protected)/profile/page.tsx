@@ -13,7 +13,10 @@ export default function UserProfile() {
     <div className="relative flex flex-col gap-10">
       <MainUserData />
 
-      <h1 className="text-4xl mt-7 font-roboto">Recent Tests</h1>
+      <div className="mt-5 flex items-center gap-2 font-roboto justify-between">
+        <h1 className="text-4xl">Recent Tests</h1>
+        <p className="">(refresh to see your latest tests)</p>
+      </div>
 
       {userRaces?.length ? (
         userRaces.map((race) => <Test race={race} key={race._id} />)

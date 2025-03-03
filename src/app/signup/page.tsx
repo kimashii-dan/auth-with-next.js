@@ -7,18 +7,29 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/util/axiosInstance";
+import EyeClosed from "../../../public/eye-closed.svg";
+import EyeOpened from "../../../public/eye-opened.svg";
+import Image from "next/image";
 
-const userSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 3 characters long"),
-  username: z.string().min(3, "Username must be at least 3 characters long"),
-});
+const userSchema = z
+  .object({
+    email: z.string().email("Invalid email format"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    username: z.string().min(3, "Username must be at least 3 characters long"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type UserFormData = z.infer<typeof userSchema>;
 
 export default function SignUpPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -35,7 +46,7 @@ export default function SignUpPage() {
     try {
       const response = await api.post("/users/signup", data);
       console.log(response);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       setError("root", {
         type: "server",
@@ -63,15 +74,50 @@ export default function SignUpPage() {
             <p className="text-red-500">{errors.email.message}</p>
           )}
 
-          <input
-            type="password"
-            {...register("password")}
-            className="p-2 rounded-md bg-[#323437] text-[#d1d0c5] focus:outline-none"
-            placeholder="Enter password..."
-            autoComplete="off"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              className="p-2 rounded-md bg-[#323437] text-[#d1d0c5] focus:outline-none w-full"
+              placeholder="Enter password..."
+              autoComplete="off"
+            />
+            <div
+              className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? (
+                <Image src={EyeOpened} alt="opened" width={25} />
+              ) : (
+                <Image src={EyeClosed} alt="closed" width={25} />
+              )}
+            </div>
+          </div>
           {errors.password && (
             <p className="text-red-500">{errors.password.message}</p>
+          )}
+
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              {...register("confirmPassword")}
+              className="p-2 rounded-md bg-[#323437] text-[#d1d0c5] focus:outline-none w-full"
+              placeholder="Confirm password..."
+              autoComplete="off"
+            />
+            <div
+              className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+            >
+              {showConfirmPassword ? (
+                <Image src={EyeOpened} alt="opened" width={25} />
+              ) : (
+                <Image src={EyeClosed} alt="closed" width={25} />
+              )}
+            </div>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-red-500">{errors.confirmPassword.message}</p>
           )}
 
           <input

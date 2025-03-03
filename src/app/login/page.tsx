@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import EyeClosed from "../../../public/eye-closed.svg";
+import EyeOpened from "../../../public/eye-opened.svg";
+import Image from "next/image";
 
 const userSchema = z.object({
   email: z.string().toLowerCase().email("Invalid email format"),
@@ -18,6 +21,7 @@ type UserFormData = z.infer<typeof userSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -34,7 +38,7 @@ export default function LoginPage() {
     try {
       const response = await api.post("/users/login", data);
       console.log(response);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error: any) {
       setError("root", {
         type: "server",
@@ -62,13 +66,26 @@ export default function LoginPage() {
             <p className="text-red-500">{errors.email.message}</p>
           )}
 
-          <input
-            type="password"
-            {...register("password")}
-            className="p-2 rounded-md bg-[#323437] text-[#d1d0c5] focus:outline-none"
-            placeholder="Enter password..."
-            autoComplete="off"
-          />
+          {/* Password input with toggle */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              className="p-2 rounded-md bg-[#323437] text-[#d1d0c5] focus:outline-none w-full"
+              placeholder="Enter password..."
+              autoComplete="off"
+            />
+            <div
+              className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? (
+                <Image src={EyeOpened} alt="opened" width={25} />
+              ) : (
+                <Image src={EyeClosed} alt="closed" width={25} />
+              )}
+            </div>
+          </div>
           {errors.password && (
             <p className="text-red-500">{errors.password.message}</p>
           )}
