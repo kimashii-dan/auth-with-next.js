@@ -1,20 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { jwtVerify, SignJWT } from "jose";
 import { connect } from "@/config/db";
 import User from "@/models/userModel";
+import { cookies } from "next/headers";
 
 connect();
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const refreshToken = request.cookies.get("refreshToken")?.value;
+    const refreshToken = (await cookies()).get("refreshToken")?.value;
+    console.log("Received cookies:", (await cookies()).getAll());
+
     if (!refreshToken) {
+      console.error("Refresh token missing");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { payload } = await jwtVerify(
       refreshToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
+      new TextEncoder().encode(process.env.TOKEN_SECRET!)
     );
 
     const user = await User.findById(payload.id);
@@ -38,16 +42,17 @@ export async function POST(request: NextRequest) {
       message: "Token refreshed successfully",
     });
 
-    response.cookies.set("accessToken", accessToken, {
+    (await cookies()).set("accessToken", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 15 * 60,
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.error("Refresh token error:", error);
     return NextResponse.json(
       { error: "Invalid refresh token" },
       { status: 403 }

@@ -4,6 +4,7 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { SignJWT } from "jose";
+import { cookies } from "next/headers";
 connect();
 
 export async function POST(request: NextRequest) {
@@ -49,18 +50,20 @@ export async function POST(request: NextRequest) {
       success: true,
     });
 
-    response.cookies.set("accessToken", accessToken, {
+    (await cookies()).set("accessToken", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 15 * 60,
+      path: "/",
     });
 
-    response.cookies.set("refreshToken", refreshToken, {
+    (await cookies()).set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60,
+      path: "/",
     });
 
     return response;

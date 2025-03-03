@@ -1,13 +1,12 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
 import Profile from "../../public/profile.svg";
 import Poop from "../../public/images/Poop.png";
 
-export default function Header() {
-  const pathname = usePathname();
+export default async function Header() {
+  const headersList = await headers();
+  const pathname = headersList.get("next-url") || "/";
 
   return (
     <div className="flex py-5 rounded-lg items-center justify-between">
@@ -29,7 +28,7 @@ export default function Header() {
           href={href}
           className={`font-roboto text-xl transition-all duration-75 ${
             pathname === href
-              ? "text-[#D1D0C5] "
+              ? "text-[#D1D0C5]"
               : "hover:text-[#D1D0C5] text-[#646669] focus:text-[#D1D0C5]"
           } ${isImage ? "p-1 rounded-full" : ""}`}
         >

@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { jwtVerify } from "jose";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/config/db";
 import Stats from "@/models/statsModel";
 import Race from "@/models/raceModel";
+import { cookies } from "next/headers";
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const accessToken = request.cookies.get("accessToken")?.value;
+    const accessToken = (await cookies()).get("accessToken")?.value;
+    console.log(accessToken);
     if (!accessToken) {
-      console.log("hey");
       return NextResponse.json(
         { error: "Access token missing" },
         { status: 401 }

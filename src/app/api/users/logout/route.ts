@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -8,16 +9,8 @@ export async function GET() {
       success: true,
     });
 
-    response.cookies.set("accessToken", "", {
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 0,
-    });
-    response.cookies.set("refreshToken", "", {
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 0,
-    });
+    (await cookies()).delete("accessToken");
+    (await cookies()).delete("refreshToken");
 
     return response;
   } catch (error: any) {

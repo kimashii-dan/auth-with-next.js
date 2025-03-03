@@ -1,10 +1,11 @@
 import { jwtVerify } from "jose";
+import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isPublicPath = path === "/login" || path === "/signup";
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const refreshToken = (await cookies()).get("refreshToken")?.value;
 
   if (refreshToken) {
     try {

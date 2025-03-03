@@ -17,7 +17,7 @@ import { getRandomSentence } from "@/util/getRandomSentence";
 import { Mode } from "@/enums/Mode";
 import { getRandomQuote } from "@/util/getRandomQuote";
 import { getRandomWords } from "@/util/getRandomWords";
-import api from "@/util/axiosInstance";
+import { postStats } from "@/util/postStats";
 
 type Action =
   | { type: "GENERATE_TEXT"; payload: { mode: Mode; text: string } }
@@ -241,7 +241,7 @@ export default function Game() {
     if (state.finished) {
       const sendStats = async () => {
         try {
-          await api.post("/users/stats", {
+          await postStats({
             wpm: state.wpm,
             accuracy: accuracy,
             selectedTime: state.selectedTime,

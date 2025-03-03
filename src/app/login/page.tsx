@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import api from "@/util/axiosInstance";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +31,11 @@ export default function LoginPage() {
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
     try {
-      const response = await api.post("/users/login", data);
+      const response = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
       console.log(response);
       router.push("/dashboard");
     } catch (error: any) {

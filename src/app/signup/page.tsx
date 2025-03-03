@@ -6,7 +6,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "@/util/axiosInstance";
 
 const userSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -33,7 +32,10 @@ export default function SignUpPage() {
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
     try {
-      const response = await api.post("/users/signup", data);
+      const response = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
       console.log(response);
       router.push("/dashboard");
     } catch (error: any) {

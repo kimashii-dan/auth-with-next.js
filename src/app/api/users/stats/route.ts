@@ -4,6 +4,7 @@ import Stats from "@/models/statsModel";
 import Race from "@/models/raceModel";
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 connect();
 
@@ -11,9 +12,8 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { wpm, accuracy, selectedTime, progress, selectedMode } = reqBody;
-    const accessToken = request.cookies.get("accessToken")?.value;
+    const accessToken = (await cookies()).get("accessToken")?.value;
     if (!accessToken) {
-      console.log("hey");
       return NextResponse.json(
         { error: "Access token missing" },
         { status: 401 }

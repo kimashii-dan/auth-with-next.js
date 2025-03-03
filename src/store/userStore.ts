@@ -3,7 +3,7 @@ import UserType from "@/types/UserType";
 import StatsType from "@/types/StatsType";
 import { create } from "zustand";
 import RaceType from "@/types/RaceType";
-import api from "@/util/axiosInstance";
+import api from "@/app/axiosInstance";
 
 interface UserStore {
   user: UserType | null;
@@ -44,13 +44,13 @@ export const useUserStore = create<UserStore>((set) => ({
         user: response.data.user_data,
         stats: response.data.stats_data,
         races: response.data.races_data || [],
-        loading: false,
       });
     } catch (error: any) {
       set({
         error: error.response?.data?.error || "Failed to fetch user data",
-        loading: false,
       });
+    } finally {
+      set({ loading: false });
     }
   },
   clearUser: () => {
